@@ -2,6 +2,9 @@ import GlowField from "@/components/portfolio/components/GlowField";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Brush, Code2, Sparkles } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
+import luziPfp from "@/assets/luzi-pfp.png";
+import lgvrpLogo from "@/assets/lgvrp-logo.png";
+import lyrpLogo from "@/assets/lyrp-logo.png";
 
 const chips = [
   { icon: Brush, label: "Profile pics" },
@@ -17,14 +20,21 @@ export default function HeroSection() {
       <div className="container relative py-16 md:py-24">
         <div className="grid items-center gap-10 md:grid-cols-[1.2fr_0.8fr]">
           <div>
-            <motion.p
+            <motion.div
               initial={reduceMotion ? false : { opacity: 0, y: 10 }}
               animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.55, ease: "easeOut" }}
-              className="text-sm text-muted-foreground"
+              className="flex items-center gap-3"
             >
-              Hi, I’m <span className="text-foreground">Luzi</span> — I make designs and build roleplay servers.
-            </motion.p>
+              <img
+                src={luziPfp}
+                alt="Luzi"
+                className="h-12 w-12 rounded-full border-2 border-primary shadow-glow object-cover"
+              />
+              <p className="text-sm text-muted-foreground">
+                Hi, I'm <span className="text-foreground font-medium">Luzi</span> — I make designs and build roleplay servers.
+              </p>
+            </motion.div>
 
             <motion.h1
               initial={reduceMotion ? false : { opacity: 0, y: 14 }}
@@ -46,7 +56,7 @@ export default function HeroSection() {
               className="mt-5 max-w-xl text-base text-muted-foreground md:text-lg"
             >
               I design profile pictures and banners, and I love developing and improving communities — especially my
-              LGVRP server.
+              LGVRP and LYRP servers.
             </motion.p>
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -57,7 +67,7 @@ export default function HeroSection() {
                 className="bg-hero text-primary-foreground shadow-glow hover:shadow-elevated hover:brightness-110"
               >
                 <a href="#contact">
-                  Let’s work <ArrowRight />
+                  Let's work <ArrowRight />
                 </a>
               </Button>
               <Button
@@ -93,9 +103,20 @@ export default function HeroSection() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm text-muted-foreground">Currently building</div>
-                  <div className="mt-1 font-display text-lg font-semibold">LGVRP</div>
+                  <div className="mt-1 font-display text-lg font-semibold">LGVRP & LYRP</div>
                 </div>
-                <div className="h-12 w-12 rounded-2xl bg-hero shadow-glow" aria-hidden />
+                <div className="flex -space-x-3">
+                  <img
+                    src={lgvrpLogo}
+                    alt="LGVRP"
+                    className="h-12 w-12 rounded-full border-2 border-primary shadow-glow object-cover"
+                  />
+                  <img
+                    src={lyrpLogo}
+                    alt="LYRP"
+                    className="h-12 w-12 rounded-full border-2 border-[hsl(var(--brand-lyrp))] shadow-[var(--shadow-glow-lyrp)] object-cover"
+                  />
+                </div>
               </div>
 
               <div className="mt-6 grid gap-3">
