@@ -3,6 +3,7 @@ import HeroSection from "@/components/portfolio/sections/HeroSection";
 import ServicesSection from "@/components/portfolio/sections/ServicesSection";
 import LuziStudiosSection from "@/components/portfolio/sections/LuziStudiosSection";
 import ServerSection from "@/components/portfolio/sections/ServerSection";
+import LYRPSection from "@/components/portfolio/sections/LYRPSection";
 import ReviewsSection from "@/components/portfolio/sections/ReviewsSection";
 import ContactSection from "@/components/portfolio/sections/ContactSection";
 
@@ -22,7 +23,8 @@ export default function PortfolioPage() {
         <ServicesSection />
         <LuziStudiosSection />
         <ServerSection />
-          <ReviewsSection />
+        <LYRPSection />
+        <ReviewsSection />
         <ContactSection />
       </main>
 
