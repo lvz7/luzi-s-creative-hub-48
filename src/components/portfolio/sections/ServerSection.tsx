@@ -28,7 +28,7 @@ export default function ServerSection() {
           <img
             src={lgvrpBanner}
             alt="LGVRP Banner"
-            className="w-full h-48 md:h-64 object-cover"
+            className="w-full object-contain"
           />
         </motion.div>
 

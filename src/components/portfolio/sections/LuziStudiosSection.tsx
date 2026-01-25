@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { motion, useReducedMotion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import luziStudiosLogo from "@/assets/luzi-studios-logo.png";
+import luziStudiosBanner from "@/assets/luzi-studios-banner.png";
 
 export default function LuziStudiosSection() {
   const reduceMotion = useReducedMotion();
@@ -9,6 +10,21 @@ export default function LuziStudiosSection() {
   return (
     <section id="studio" className="border-t border-border">
       <div className="container py-16 md:py-20">
+        {/* Banner */}
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10% 0px" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="mb-10 overflow-hidden rounded-3xl border border-[hsl(var(--brand-studio-muted))] shadow-[var(--shadow-glow-studio)]"
+        >
+          <img
+            src={luziStudiosBanner}
+            alt="Luzi Studios Banner"
+            className="w-full object-contain"
+          />
+        </motion.div>
+
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
           <img
             src={luziStudiosLogo}

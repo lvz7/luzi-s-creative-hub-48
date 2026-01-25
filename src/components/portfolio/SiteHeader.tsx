@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import luziPfp from "@/assets/luzi-pfp.png";
 
 const links = [
   { label: "Services", href: "#services" },
@@ -46,12 +47,14 @@ export default function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/70 backdrop-blur-md">
       <div className="container flex h-16 items-center justify-between">
         <a href="#top" className="flex items-center gap-3">
-          <div className="relative h-9 w-9 overflow-hidden rounded-xl bg-hero shadow-glow" aria-hidden>
-            <div className="absolute inset-0 opacity-70" />
-          </div>
+          <img
+            src={luziPfp}
+            alt="Luzi"
+            className="h-9 w-9 rounded-full border-2 border-primary shadow-glow object-cover"
+          />
           <div className="leading-tight">
             <div className="font-display text-sm font-semibold tracking-wide">Luzi</div>
-              <div className="text-xs text-muted-foreground">Designs • LGVRP • LYRP</div>
+            <div className="text-xs text-muted-foreground">Designs • LGVRP • LYRP</div>
           </div>
         </a>
 
