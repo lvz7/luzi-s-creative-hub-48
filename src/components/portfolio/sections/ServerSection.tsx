@@ -47,7 +47,12 @@ export default function ServerSection() {
               <div>
                 <h2 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">LGVRP</h2>
                 {memberCount && (
-                  <p className="text-xs text-muted-foreground/60 mt-0.5">{memberCount} members online</p>
+                  <div className="flex items-center gap-3 mt-0.5">
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground/60">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      {memberCount.online} online
+                    </span>
+                  </div>
                 )}
               </div>
             </div>
