@@ -1,9 +1,10 @@
+import { useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Car, Gamepad2, Map, Users } from "lucide-react";
+import { Car, Gamepad2, Map, Play, Users } from "lucide-react";
 import { FaDiscord, FaTiktok } from "react-icons/fa";
 import { SiRoblox } from "react-icons/si";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import koyosanBanner from "@/assets/koyosan-banner.png";
 import koyosanLogo from "@/assets/koyosan-logo.png";
 
@@ -15,41 +16,73 @@ const bullets = [
 
 export default function KoyosanSection() {
   const reduceMotion = useReducedMotion();
+  const [playing, setPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handlePlay = useCallback(() => {
+    setPlaying(true);
+    // Small delay so the video element mounts first
+    setTimeout(() => {
+      videoRef.current?.play();
+    }, 50);
+  }, []);
+
+  const handleEnded = useCallback(() => {
+    setPlaying(false);
+  }, []);
 
   return (
     <section id="koyosan" className="border-t border-border">
       <div className="container py-16 md:py-20">
-        {/* Banner */}
+        {/* Banner / Trailer */}
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 16 }}
           whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-10% 0px" }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="mb-10 overflow-hidden rounded-3xl border border-[hsl(var(--brand-koyosan-muted))] shadow-[var(--shadow-glow-koyosan)]"
+          className="relative mb-10 overflow-hidden rounded-3xl border border-[hsl(var(--brand-koyosan-muted))] shadow-[var(--shadow-glow-koyosan)]"
         >
-          <img
-            src={koyosanBanner}
-            alt="Koyosan, Japan Banner"
-            className="w-full object-contain"
-          />
-        </motion.div>
-
-        {/* Trailer */}
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-10% 0px" }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-          className="mb-10 overflow-hidden rounded-3xl border border-[hsl(var(--brand-koyosan-muted))] shadow-[var(--shadow-glow-koyosan)]"
-        >
-          <video
-            src="/videos/koyosan-trailer.mov"
-            controls
-            playsInline
-            preload="metadata"
-            className="w-full"
-            poster={koyosanBanner}
-          />
+          <AnimatePresence mode="wait">
+            {!playing ? (
+              <motion.div
+                key="banner"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="relative cursor-pointer group"
+                onClick={handlePlay}
+              >
+                <img
+                  src={koyosanBanner}
+                  alt="Koyosan, Japan Banner"
+                  className="w-full object-contain"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[hsl(var(--brand-koyosan))] shadow-[var(--shadow-glow-koyosan)] group-hover:scale-110 transition-transform">
+                    <Play className="h-7 w-7 text-white ml-1" fill="white" />
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="video"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <video
+                  ref={videoRef}
+                  src="/videos/koyosan-trailer.mov"
+                  controls
+                  playsInline
+                  onEnded={handleEnded}
+                  className="w-full"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:items-start">
