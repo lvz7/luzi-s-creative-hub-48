@@ -40,12 +40,12 @@ export default function ServerSection() {
           <div>
             <div className="flex items-center gap-4">
               <img
-                src={lgvrpLogo}
-                alt="LGVRP Logo"
-                className="h-16 w-16 rounded-full border-2 border-primary shadow-glow"
+                src={ruralvilleLogo}
+                alt="Ruralville Logo"
+                className="h-16 w-16 rounded-full border-2 border-[hsl(var(--brand-ruralville))] shadow-[var(--shadow-glow-ruralville)]"
               />
               <div>
-                <h2 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">LGVRP</h2>
+                <h2 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">Ruralville</h2>
                 {memberCount && (
                   <span className="flex items-center gap-1 text-xs text-muted-foreground/50 mt-0.5">
                     <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -55,7 +55,7 @@ export default function ServerSection() {
               </div>
             </div>
             <p className="mt-3 text-muted-foreground">
-              I run LGVRP and I'm always building new systems and improving the experience.
+              I run Ruralville and I'm always building new systems and improving the experience.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2">
