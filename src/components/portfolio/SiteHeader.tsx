@@ -7,7 +7,7 @@ import luziPfp from "@/assets/luzi-pfp.png";
 const links = [
   { label: "Services", href: "#services" },
   { label: "Luzi Studios", href: "#studio" },
-  { label: "LGVRP", href: "#lgvrp" },
+  { label: "Ruralville", href: "#lgvrp" },
   { label: "LYRP", href: "#lyrp" },
   { label: "Koyosan", href: "#koyosan" },
   { label: "Reviews", href: "#reviews" },
