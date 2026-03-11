@@ -70,7 +70,7 @@ export default function ServerSection() {
               <Button
                 asChild
                 variant="default"
-                className="bg-hero text-primary-foreground shadow-glow hover:shadow-elevated hover:brightness-110"
+                className="bg-[hsl(var(--brand-ruralville))] text-primary-foreground shadow-[var(--shadow-glow-ruralville)] hover:shadow-elevated hover:brightness-110"
               >
                 <a href="https://discord.gg/rural" target="_blank" rel="noopener noreferrer">
                   <FaDiscord className="h-4 w-4" />
