@@ -4,8 +4,8 @@ import { Code2, Users, Wrench } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { FaDiscord } from "react-icons/fa";
 import { SiTiktok, SiYoutube } from "react-icons/si";
-import lgvrpBanner from "@/assets/lgvrp-banner.png";
-import lgvrpLogo from "@/assets/lgvrp-logo.png";
+import ruralvilleBanner from "@/assets/ruralville-banner.png";
+import ruralvilleLogo from "@/assets/ruralville-logo.png";
 import { useDiscordMemberCount } from "@/hooks/useDiscordMemberCount";
 
 const bullets = [
