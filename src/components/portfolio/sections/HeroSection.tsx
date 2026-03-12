@@ -57,7 +57,7 @@ export default function HeroSection() {
               className="mt-5 max-w-xl text-base text-muted-foreground md:text-lg"
             >
               I design profile pictures and banners, and I love developing and improving communities — especially my
-              LGVRP and LYRP servers.
+              Ruralville and LYRP servers.
             </motion.p>
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
