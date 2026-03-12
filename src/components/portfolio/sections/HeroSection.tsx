@@ -104,12 +104,12 @@ export default function HeroSection() {
                 <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm text-muted-foreground">Currently building</div>
-                  <div className="mt-1 font-display text-lg font-semibold">LGVRP, LYRP & Koyosan</div>
+                  <div className="mt-1 font-display text-lg font-semibold">Ruralville, LYRP & Koyosan</div>
                 </div>
                 <div className="flex -space-x-3">
                   <img
-                    src={lgvrpLogo}
-                    alt="LGVRP"
+                    src={ruralvilleLogo}
+                    alt="Ruralville"
                     className="h-12 w-12 rounded-full border-2 border-primary shadow-glow object-cover"
                   />
                   <img
