@@ -13,7 +13,7 @@ const services = [
   {
     icon: Layout,
     title: "Banners & Headers",
-    desc: "Social + server banners with depth, lighting, and a strong focal point.",
+    desc: "Server and social banners with depth, glow, and a solid focal point.",
     tags: ["Layered", "Glow"],
   },
   {
