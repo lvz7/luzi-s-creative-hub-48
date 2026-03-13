@@ -43,11 +43,11 @@ export default function HeroSection() {
               transition={{ duration: 0.65, ease: "easeOut", delay: 0.05 }}
               className="mt-4 font-display text-4xl font-semibold tracking-tight md:text-6xl"
             >
-              Clean visuals.
-              <br />
-              Fast turnarounds.
-              <br />
-              <span className="text-muted-foreground">Servers that feel alive.</span>
+               Bold designs.
+               <br />
+               Quick delivery.
+               <br />
+               <span className="text-muted-foreground">Communities that actually pop.</span>
             </motion.h1>
 
             <motion.p
