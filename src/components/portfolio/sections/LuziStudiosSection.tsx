@@ -35,7 +35,7 @@ export default function LuziStudiosSection() {
           <div>
             <h2 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">Luzi Studios</h2>
             <p className="mt-2 max-w-2xl text-muted-foreground">
-              A simple hub for commissions — purchase designs and join the Discord to stay updated.
+              Where I handle commissions — hop in the Discord to see what's open.
             </p>
           </div>
         </div>
