@@ -19,7 +19,7 @@ const services = [
   {
     icon: ImageIcon,
     title: "Thumbnails",
-    desc: "Punchy layouts that stand out in a feed and match your vibe.",
+    desc: "Eye-catching layouts that don't get lost in a feed.",
     tags: ["Bold type", "Clarity"],
   },
   {
