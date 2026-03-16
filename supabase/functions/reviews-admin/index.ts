@@ -80,8 +80,6 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(url, serviceKey);
 
-    const body = (await req.json().catch(() => ({}))) as Partial<ActionBody>;
-
     // List pending reviews
     if (body.action === "list_pending") {
       const { data, error } = await supabase
