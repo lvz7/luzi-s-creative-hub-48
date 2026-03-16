@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -50,6 +50,7 @@ type PublicReview = {
   design: string | null;
   body: string;
   reply: string | null;
+  image_url: string | null;
   created_at: string;
 };
 
@@ -75,9 +76,18 @@ function Stars({ value }: { value: number }) {
 
 const FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/reviews-admin`;
 
-function ReplyBox({ reviewId, onReplied }: { reviewId: string; onReplied: () => void }) {
-  const [text, setText] = useState("");
+function ReplyBox({
+  reviewId,
+  existingReply,
+  onReplied,
+}: {
+  reviewId: string;
+  existingReply?: string | null;
+  onReplied: () => void;
+}) {
+  const [text, setText] = useState(existingReply ?? "");
   const [sending, setSending] = useState(false);
+  const [editing, setEditing] = useState(!existingReply);
   const { toast } = useToast();
 
   const submit = async () => {
@@ -91,8 +101,8 @@ function ReplyBox({ reviewId, onReplied }: { reviewId: string; onReplied: () => 
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Failed");
-      toast({ title: "Reply sent!" });
-      setText("");
+      toast({ title: existingReply ? "Reply updated!" : "Reply sent!" });
+      setEditing(false);
       onReplied();
     } catch (e: any) {
       toast({ title: "Couldn't reply", description: e.message, variant: "destructive" });
@@ -100,6 +110,10 @@ function ReplyBox({ reviewId, onReplied }: { reviewId: string; onReplied: () => 
       setSending(false);
     }
   };
+
+  if (!editing && existingReply) {
+    return null; // Show nothing; the edit button is rendered outside
+  }
 
   return (
     <div className="mt-3 flex gap-2">
@@ -111,8 +125,13 @@ function ReplyBox({ reviewId, onReplied }: { reviewId: string; onReplied: () => 
         maxLength={500}
       />
       <Button size="sm" onClick={submit} disabled={sending || !text.trim()}>
-        Reply
+        {existingReply ? "Save" : "Reply"}
       </Button>
+      {existingReply && (
+        <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>
+          Cancel
+        </Button>
+      )}
     </div>
   );
 }
@@ -120,6 +139,10 @@ function ReplyBox({ reviewId, onReplied }: { reviewId: string; onReplied: () => 
 export default function ReviewsSection() {
   const [onCooldown, setOnCooldown] = useState(isOnCooldown());
   const [isOwner, setIsOwner] = useState(false);
+  const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -153,20 +176,45 @@ export default function ReviewsSection() {
         .order("created_at", { ascending: false })
         .limit(12);
       if (error) throw error;
-      // Fetch replies separately since the column may not be in generated types yet
       const ids = (data ?? []).map((r: any) => r.id);
       if (ids.length === 0) return [] as PublicReview[];
-      const { data: withReplies } = await supabase
+      const { data: extraData } = await supabase
         .from("reviews")
-        .select("id,reply" as any)
+        .select("id,reply,image_url" as any)
         .in("id", ids);
-      const replyMap = new Map((withReplies ?? []).map((r: any) => [r.id, r.reply]));
+      const extraMap = new Map(
+        (extraData ?? []).map((r: any) => [r.id, { reply: r.reply, image_url: r.image_url }])
+      );
       return (data ?? []).map((r: any) => ({
         ...r,
-        reply: replyMap.get(r.id) ?? null,
+        reply: extraMap.get(r.id)?.reply ?? null,
+        image_url: extraMap.get(r.id)?.image_url ?? null,
       })) as PublicReview[];
     },
   });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Image too large", description: "Max 5MB", variant: "destructive" });
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("review-images").upload(path, file);
+    if (error) {
+      toast({ title: "Image upload failed", description: error.message, variant: "destructive" });
+      return null;
+    }
+    const { data } = supabase.storage.from("review-images").getPublicUrl(path);
+    return data.publicUrl;
+  };
 
   const onSubmit = async (values: ReviewFormValues) => {
     if (isOnCooldown()) {
@@ -178,15 +226,22 @@ export default function ReviewsSection() {
     const parsed = reviewSchema.safeParse(values);
     if (!parsed.success) return;
 
-    const payload = {
+    let imageUrl: string | null = null;
+    if (imageFile) {
+      imageUrl = await uploadImage(imageFile);
+      if (!imageUrl) return; // upload failed
+    }
+
+    const payload: Record<string, any> = {
       name: parsed.data.name,
       rating: parsed.data.rating,
       design: parsed.data.design ? parsed.data.design : null,
       body: parsed.data.body,
       approved: true,
     };
+    if (imageUrl) payload.image_url = imageUrl;
 
-    const { error } = await supabase.from("reviews").insert(payload);
+    const { error } = await supabase.from("reviews").insert(payload as any);
     if (error) {
       toast({ title: "Couldn't submit review", description: error.message, variant: "destructive" });
       return;
@@ -195,6 +250,9 @@ export default function ReviewsSection() {
     setCooldown();
     setOnCooldown(true);
     form.reset(defaultValues);
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     toast({ title: "Review submitted", description: "Thanks for your review!" });
     void refetch();
   };
@@ -282,6 +340,40 @@ export default function ReviewsSection() {
                 ) : null}
               </div>
 
+              <div className="grid gap-2">
+                <label className="text-sm text-muted-foreground">
+                  Image (optional)
+                </label>
+                <Input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleImageChange}
+                  className="bg-background/40 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1 file:text-xs file:text-primary"
+                />
+                {imagePreview && (
+                  <div className="relative mt-1">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="max-h-32 rounded-xl border border-border/60 object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageFile(null);
+                        setImagePreview(null);
+                        if (fileInputRef.current) fileInputRef.current.value = "";
+                      }}
+                      className="absolute -right-2 -top-2 rounded-full bg-destructive px-1.5 text-xs text-destructive-foreground"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">Max 5MB · JPG, PNG, WebP, GIF</p>
+              </div>
+
               <Button
                 type="submit"
                 variant="default"
@@ -290,9 +382,11 @@ export default function ReviewsSection() {
               >
                 {onCooldown ? `Cooldown (${cooldownRemaining()})` : "Submit review"}
               </Button>
-              <p className="text-xs text-muted-foreground">
-                {onCooldown ? "You can submit again after the cooldown." : ""}
-              </p>
+              {onCooldown && (
+                <p className="text-xs text-muted-foreground">
+                  You can submit again after the cooldown.
+                </p>
+              )}
             </div>
           </form>
 
@@ -345,16 +439,49 @@ export default function ReviewsSection() {
                         )}
                       </div>
                     </div>
+
                     <p className="mt-3 text-sm text-muted-foreground">{r.body}</p>
 
-                    {r.reply && (
+                    {r.image_url && (
+                      <a href={r.image_url} target="_blank" rel="noopener noreferrer">
+                        <img
+                          src={r.image_url}
+                          alt={`${r.name}'s review image`}
+                          className="mt-3 max-h-48 rounded-xl border border-border/60 object-cover hover:opacity-90 transition-opacity"
+                          loading="lazy"
+                        />
+                      </a>
+                    )}
+
+                    {r.reply && editingReplyId !== r.id && (
                       <div className="mt-3 rounded-xl border border-primary/20 bg-primary/5 p-3">
-                        <p className="text-xs font-semibold text-primary mb-1">Luzi</p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-semibold text-primary mb-1">Luzi</p>
+                          {isOwner && (
+                            <button
+                              onClick={() => setEditingReplyId(r.id)}
+                              className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                            >
+                              Edit
+                            </button>
+                          )}
+                        </div>
                         <p className="text-sm text-muted-foreground">{r.reply}</p>
                       </div>
                     )}
 
-                    {isOwner && !r.reply && (
+                    {isOwner && editingReplyId === r.id && (
+                      <ReplyBox
+                        reviewId={r.id}
+                        existingReply={r.reply}
+                        onReplied={() => {
+                          setEditingReplyId(null);
+                          void refetch();
+                        }}
+                      />
+                    )}
+
+                    {isOwner && !r.reply && editingReplyId !== r.id && (
                       <ReplyBox reviewId={r.id} onReplied={() => void refetch()} />
                     )}
                   </article>
