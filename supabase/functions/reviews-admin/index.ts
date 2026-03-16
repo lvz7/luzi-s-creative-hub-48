@@ -16,7 +16,8 @@ type ActionBody =
   | { action: "list_contacts" }
   | { action: "mark_read"; id: string }
   | { action: "reply"; id: string; reply: string }
-  | { action: "check_ip" };
+  | { action: "check_ip" }
+  | { action: "delete_review"; id: string };
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
