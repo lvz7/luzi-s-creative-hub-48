@@ -291,7 +291,7 @@ export default function ReviewsSection() {
                 {onCooldown ? `Cooldown (${cooldownRemaining()})` : "Submit review"}
               </Button>
               <p className="text-xs text-muted-foreground">
-                {onCooldown ? "You can submit again after the cooldown." : "1 review per week — keep it honest."}
+                {onCooldown ? "You can submit again after the cooldown." : ""}
               </p>
             </div>
           </form>
